@@ -1,0 +1,5 @@
+0. write more tests for VKClient and VK strategy
+1. documentation
+2. use native faraday logging middleware when
+https://github.com/lostisland/faraday/pull/277 will be merged
+
