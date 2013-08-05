@@ -2,13 +2,13 @@ require 'omniauth/strategies/oauth2'
 
 module OmniAuth
   module Strategies
-    # Authenticate to Vkontakte utilizing OAuth 2.0 and retrieve
+    # Authenticate to VK utilizing OAuth 2.0 and retrieve
     # basic user information.
     # documentation available here:
-    # http://vkontakte.ru/developers.php?o=-17680044&p=Authorization&s=0
+    # http://vk.com/dev/authentication
     #
     # @example Basic Usage
-    #     use OmniAuth::Strategies::Vkontakte, 'API Key', 'Secret Key'
+    #     use OmniAuth::Strategies::VK, 'API Key', 'Secret Key'
     class VK < OmniAuth::Strategies::OAuth2
 
       option :client_options, {
