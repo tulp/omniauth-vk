@@ -1,4 +1,5 @@
 require 'uri'
+require 'multi_json'
 
 module OmniAuth
   class VKClient
@@ -6,24 +7,31 @@ module OmniAuth
     SITE = 'https://api.vk.com'
     ENDPOINT = '/method/users.get'
 
-    attr_reader :client, :options, :logger
+    attr_reader :client, :request_params, :logger
 
-    def initialize(access_token, version, logger: nil)
+    def initialize(logger: nil, **request_params)
       @client = Faraday.new( SITE )
-      @options = { access_token: access_token, version: version }
+      @request_params = request_params
       @logger = logger
+
+      debug("params: #{request_params.inspect}")
     end
 
     def debug(msg)
-      logger.debug("[OmniAuth::VkClient] " + msg) if logger
+      logger.debug("[OmniAuth::VkClient] " + msg.inspect) if logger
     end
 
-    def response(fields)
-      debug("request options: #{options.inspect}")
-      request_options = options.dup.merge(fields: fields) if fields.present?
-      client.get(URI.join(SITE, ENDPOINT), request_options).tap do |response|
-        debug(response)
-      end.parsed.first
+    def response
+      @response ||=\
+      client.get(URI.join(SITE, ENDPOINT), request_params).tap do |response|
+        debug(response.headers)
+        debug(response.body)
+      end
+    end
+
+    def parsed_response
+      @parsed_response ||=\
+      MultiJson.load(response.body)["response"].first
     end
 
   end

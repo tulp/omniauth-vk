@@ -1,5 +1,4 @@
 require 'omniauth/strategies/oauth2'
-require 'multi_json'
 
 module OmniAuth
   module Strategies
@@ -25,14 +24,22 @@ module OmniAuth
       option :display, 'popup'
       option :authorize_options, %i(scope v display)
 
-      # defaults for API call for fetching user information
-      option :fields, ['photo_50']
-      option :logger, nil
+      # Defaults for API call for fetching user information
+      option :fields, %w(photo_50)
+
       option :info_proc, nil
 
       def api_response
         @api_response ||=\
-        VKClient.new(access_token.token, options.version, logger: options.logger).response
+          (VKClient.new(
+                      logger: OmniAuth.config.logger,
+                      **{
+                        access_token: access_token.token,
+                        v: options['v'],
+                        fields: options['fields'].join(','),
+                        user_id: uid
+                      })
+         ).parsed_response
       end
 
       uid { access_token['user_id'].to_s }
@@ -42,17 +49,17 @@ module OmniAuth
         if options.info_proc
           info_proc[api_response]
         else
-          [:first_name, :last_name, :image].inject do |auth_hash, key|
-            auth_hash[key] = api_response[key]
-            auth_hash
-          end
-        end.tap do |auth_hash|
-          # if VK should be nice, we would be happy
-          auth_hash[:email] = access_token['email']
+          {
+            first_name: api_response['first_name'],
+            last_name: api_response['last_name'],
+            # if VK should be nice, we would be happy
+            email: access_token['email'],
+            photo: api_response['photo_50']
+          }
         end
       }
 
-      extra {{ raw_info: api_response }}
+      extra { skip_info? ? {} : { raw_info: api_response } }
 
     end
   end

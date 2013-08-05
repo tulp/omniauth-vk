@@ -33,7 +33,7 @@ end
 
 desc "Open an irb session preloaded with this library"
 task :console do
-  sh "irb -rubygems -I lib -r omniauth-vk.rb"
+  sh "irb -rubygems -I ./lib -r omniauth-vk.rb"
 end
 
 task :default => :test
