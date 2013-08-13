@@ -27,8 +27,6 @@ module OmniAuth
       # Defaults for API call for fetching user information
       option :fields, %w(photo_50)
 
-      option :info_proc, nil
-
       def api_response
         @api_response ||=\
           (VKClient.new(
@@ -39,25 +37,19 @@ module OmniAuth
                         fields: options['fields'].join(','),
                         user_id: uid
                       })
-         ).parsed_response
+         ).get
       end
 
       uid { access_token['user_id'].to_s }
 
       # https://github.com/intridea/omniauth/wiki/Auth-Hash-Schema
-      info {
-        if options.info_proc
-          info_proc[api_response]
-        else
-          {
+      info {{
             first_name: api_response['first_name'],
             last_name: api_response['last_name'],
             # if VK should be nice, we would be happy
             email: access_token['email'],
             photo: api_response['photo_50']
-          }
-        end
-      }
+        }}
 
       extra { skip_info? ? {} : { raw_info: api_response } }
 

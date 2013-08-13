@@ -29,7 +29,7 @@ describe OmniAuth::Strategies::VK do
 
   describe "default options" do
 
-    %w(scope logger info_proc).each do |method|
+    %w(scope logger).each do |method|
       it "should have no #{method}" do
         subject.options.send(method).must_be_nil
       end
