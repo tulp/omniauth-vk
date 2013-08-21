@@ -21,8 +21,7 @@ module OmniAuth
       option :v, '5.0'
 
       option :scope, nil
-      option :display, 'popup'
-      option :authorize_options, %i(scope v display)
+      option :authorize_options, %i(scope v)
 
       # Defaults for API call for fetching user information
       option :fields, %w(photo_50)
